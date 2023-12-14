@@ -3,12 +3,14 @@ from aiogram.types import ReplyKeyboardRemove
 from dotenv import get_variables
 
 from keyboards import contact_keyboard, gender_keyboard
+from utils.checkIsAgeCorrect import check_age
 
 config = get_variables(".env")
 
 bot = Bot(token=config.get('TOKEN'))
 
 dp = Dispatcher(bot)
+
 
 @dp.message_handler(commands=['start'])
 async def start_bot(message: types.Message):
@@ -34,6 +36,11 @@ async def handle_age(message: types.Message):
 @dp.message_handler(lambda message: message.text.lower() != 'мужской' or message.text.lower() != 'женский')
 async def handle_gender_error(message: types.Message):
     await message.answer(text='Выберите один из двух вариантов', reply_markup=gender_keyboard)
+
+
+@dp.message_handler(check_age)
+async def handle_age(message: types.Message):
+    await message.answer('Отлично')
 
 
 if __name__ == '__main__':
