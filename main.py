@@ -6,6 +6,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardRemove
 from dotenv import get_variables
 
+from gpt import ask_gpt
 from keyboards import contact_keyboard, gender_keyboard
 
 config = get_variables(".env")
@@ -49,6 +50,9 @@ async def handle_gender(message: types.Message, state: FSMContext):
         await message.answer(text='Напишите корректный пол или выберите', reply_markup=gender_keyboard)
 
 
+to_gpt_text = {}
+
+
 @dp.message_handler(state=RegistrationForm.waiting_for_age)
 async def handle_age(message: types.Message, state: FSMContext):
     try:
@@ -65,6 +69,7 @@ async def handle_age(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=RegistrationForm.waiting_for_relation)
 async def relation_handler(message: types.Message, state: FSMContext):
+    to_gpt_text["who"] = message.text
     await state.update_data(relation=message.text)
     await RegistrationForm.next()
     await message.answer(text='Опишите его интересы')
@@ -72,10 +77,19 @@ async def relation_handler(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=RegistrationForm.waiting_for_message)
 async def relation_handler(message: types.Message, state: FSMContext):
+    to_gpt_text["interests"] = message.text
     await state.finish()
     user_data = await state.get_data()
-    print(user_data)
-    await message.answer(text='Подождите')
+
+    answer = await message.answer(text="Подождите пожалуйста...")
+
+    chat_answer = ask_gpt(
+        F'Я хочу сделать {to_gpt_text.get("who")} подарок на новый год. Его интересы {to_gpt_text.get("interests")}. '
+        F'Дай мне спосок подарков')
+
+    await message.answer(text=chat_answer)
+
+    await bot.delete_message(chat_id=answer.chat.id, message_id=answer.message_id)
 
 
 if __name__ == '__main__':
