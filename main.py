@@ -81,15 +81,14 @@ async def relation_handler(message: types.Message, state: FSMContext):
     await state.finish()
     user_data = await state.get_data()
 
-    answer = await message.answer(text="Подождите пожалуйста...")
+    await ask_gpt(message, bot, to_gpt_text)
 
-    chat_answer = ask_gpt(
-        F'Я хочу сделать {to_gpt_text.get("who")} подарок на новый год. Его интересы {to_gpt_text.get("interests")}. '
-        F'Дай мне спосок подарков')
 
-    await message.answer(text=chat_answer)
+@dp.message_handler(commands=['more'])
+async def relation_handler(message: types.Message):
+    to_gpt_text["interests"] = message.text
 
-    await bot.delete_message(chat_id=answer.chat.id, message_id=answer.message_id)
+    await ask_gpt(message, bot, to_gpt_text)
 
 
 if __name__ == '__main__':
