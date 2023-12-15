@@ -19,6 +19,8 @@ class RegistrationForm(StatesGroup):
     waiting_for_contact = State()
     waiting_for_gender = State()
     waiting_for_age = State()
+    waiting_for_relation = State()
+    waiting_for_message = State()
 
 
 @dp.message_handler(commands=['start'])
@@ -51,12 +53,29 @@ async def handle_gender(message: types.Message, state: FSMContext):
 async def handle_age(message: types.Message, state: FSMContext):
     try:
         age = int(message.text)
-        await state.update_data(age=age)
-        user_data = await state.get_data()
-        await state.finish()
-        await message.answer(text=f'Регистрация завершена. Ваш возраст: {age}.')
+        if age > 99:
+            await message.answer("Не допустимый возраст")
+        else:
+            await RegistrationForm.next()
+            await state.update_data(age=age)
+            await message.answer(text=f'Кому вы хотите сделать подарок.')
     except ValueError:
         await message.answer(text='Напишите корректный возраст')
+
+
+@dp.message_handler(state=RegistrationForm.waiting_for_relation)
+async def relation_handler(message: types.Message, state: FSMContext):
+    await state.update_data(relation=message.text)
+    await RegistrationForm.next()
+    await message.answer(text='Опишите его интересы')
+
+
+@dp.message_handler(state=RegistrationForm.waiting_for_message)
+async def relation_handler(message: types.Message, state: FSMContext):
+    await state.finish()
+    user_data = await state.get_data()
+    print(user_data)
+    await message.answer(text='Подождите')
 
 
 if __name__ == '__main__':
