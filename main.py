@@ -36,25 +36,27 @@ async def handle_contact(message: types.Message, state: FSMContext):
     await message.answer(text='Выберите свой пол', reply_markup=gender_keyboard)
 
 
-@dp.message_handler(lambda message: message.text.lower() == 'мужской' or message.text.lower() == 'женский',
-                    state=RegistrationForm.waiting_for_gender)
+@dp.message_handler(state=RegistrationForm.waiting_for_gender)
 async def handle_gender(message: types.Message, state: FSMContext):
-    gender = message.text.lower()
-    await state.update_data(gender=gender)
-    await RegistrationForm.next()
-    await message.answer(text='Сколько вам лет?', reply_markup=ReplyKeyboardRemove())
+    if message.text.lower() == 'мужской' or message.text.lower() == 'женский':
+        gender = message.text.lower()
+        await state.update_data(gender=gender)
+        await RegistrationForm.next()
+        await message.answer(text='Сколько вам лет?', reply_markup=ReplyKeyboardRemove())
+    else:
+        await message.answer(text='Напишите корректный пол или выберите', reply_markup=gender_keyboard)
 
 
-@dp.message_handler(lambda message: message.text.isdigit(), state=RegistrationForm.waiting_for_age)
+@dp.message_handler(state=RegistrationForm.waiting_for_age)
 async def handle_age(message: types.Message, state: FSMContext):
-    age = int(message.text)
-    await state.update_data(age=age)
-
-    user_data = await state.get_data()
-
-    await state.finish()
-
-    await message.answer(text=f'Регистрация завершена. Ваш возраст: {age}.')
+    try:
+        age = int(message.text)
+        await state.update_data(age=age)
+        user_data = await state.get_data()
+        await state.finish()
+        await message.answer(text=f'Регистрация завершена. Ваш возраст: {age}.')
+    except ValueError:
+        await message.answer(text='Напишите корректный возраст')
 
 
 if __name__ == '__main__':
