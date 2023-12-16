@@ -1,6 +1,9 @@
 from pymongo import MongoClient
+from dotenv import get_variables
 
-client = MongoClient('mongodb://127.0.0.1:27017/')
+config = get_variables(".env")
+
+client = MongoClient(config["MONGODB_URI"])
 
 db = client['chat_bot']
 
