@@ -6,6 +6,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardRemove
 from dotenv import get_variables
 
+from db import USERS
 from gpt import ask_gpt
 from keyboards import contact_keyboard, gender_keyboard
 
@@ -78,17 +79,27 @@ async def relation_handler(message: types.Message, state: FSMContext):
 @dp.message_handler(state=RegistrationForm.waiting_for_message)
 async def relation_handler(message: types.Message, state: FSMContext):
     to_gpt_text["interests"] = message.text
-    await state.finish()
     user_data = await state.get_data()
+
+    if user_data.get("contact"):
+        USERS.insert_one({
+            "first_name": user_data["contact"].first_name,
+            "phone_number": user_data["contact"].phone_number,
+            "user_id": user_data["contact"].user_id,
+            "gender": user_data["gender"],
+            "age": user_data["age"]
+        })
+
+    await state.finish()
 
     await ask_gpt(message, bot, to_gpt_text)
 
 
 @dp.message_handler(commands=['more'])
 async def relation_handler(message: types.Message):
-    to_gpt_text["interests"] = message.text
-
-    await ask_gpt(message, bot, to_gpt_text)
+    await RegistrationForm.waiting_for_age.set()
+    await message.answer(text=f'Кому вы хотите сделать подарок.')
+    await RegistrationForm.next()
 
 
 if __name__ == '__main__':
