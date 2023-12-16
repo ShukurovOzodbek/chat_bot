@@ -1,7 +1,7 @@
 from pymongo import MongoClient
-from dotenv import get_variables
+from dotenv import dotenv_values
 
-config = get_variables(".env")
+config = dotenv_values(".env")
 
 client = MongoClient(config["MONGODB_URI"])
 

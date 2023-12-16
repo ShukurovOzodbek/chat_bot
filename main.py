@@ -4,13 +4,13 @@ from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardRemove
-from dotenv import get_variables
+from dotenv import dotenv_values
 
 from db import USERS
 from gpt import ask_gpt
 from keyboards import contact_keyboard, gender_keyboard
 
-config = get_variables(".env")
+config = dotenv_values(".env")
 
 bot = Bot(token=config.get('TOKEN'))
 dp = Dispatcher(bot, storage=MemoryStorage())

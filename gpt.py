@@ -1,8 +1,8 @@
 from aiogram.types import Message
-from dotenv import get_variables
+from dotenv import dotenv_values
 from openai import OpenAI
 
-config = get_variables(".env")
+config = dotenv_values(".env")
 
 client = OpenAI(
     organization=config["ORGANIZATION"],
