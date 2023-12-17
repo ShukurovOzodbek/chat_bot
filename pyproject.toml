@@ -10,7 +10,7 @@ authors = ["Your Name shukurov.ozodbek.jaloliddinovich@gmail.com"]
 
 [tool.poetry.dependencies]
 python = "3.8.6"
-aiohttp = "^3.7.4"
+aiohttp = "^3.8"
 # Add other dependencies as needed
 
 [tool.poetry.dev-dependencies]
