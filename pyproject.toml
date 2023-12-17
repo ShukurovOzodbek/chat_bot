@@ -8,5 +8,5 @@ version = "0.1.0"
 description = ""
 
 [dependencies]
-python = "^3.8"
-aiohttp = "^3.7.4"
+python = "^3.10"
+aiohttp = "^3.8.6"
