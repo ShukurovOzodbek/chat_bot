@@ -5,8 +5,17 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "your-project"
 version = "0.1.0"
-description = ""
+description = "Your project description"
+authors = ["Your Name shukurov.ozodbek.jaloliddinovich@gmail.com"]
 
-[dependencies]
-python = "^3.10"
-aiohttp = "^3.8.6"
+[tool.poetry.dependencies]
+python = "^3.8"
+aiohttp = "^3.7.4"
+# Add other dependencies as needed
+
+[tool.poetry.dev-dependencies]
+# Add development dependencies as needed
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
